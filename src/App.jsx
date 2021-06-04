@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MusicSelection from './components/spotify/MusicSelection';
 import axios from 'axios';
+import TrackLists from './components/tracklists/TrackLists';
 
 const App = () => {
 	const { REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } = process.env;
@@ -16,6 +17,8 @@ const App = () => {
 	const [token, setToken] = useState('');
 	const [genres, setGenres] = useState({ selectedGenre: '', listOfGenres: [] });
 	const [playlist, setPlaylist] = useState({ selectedPlaylist: '', listOfPlaylist: [] });
+	const [tracks, setTracks] = useState({ selectedTrack: '', listOfTracks: [] });
+	const [trackDetail, setTrackDetail] = useState(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -49,7 +52,8 @@ const App = () => {
 			listOfGenres: genres.listOfGenres,
 		});
 
-		const playlistResponse = await axios(`https://api.spotify.com/v1/browse/categories/${val}/playlists?limit=10`, {
+		const playlistResponse = await axios(
+			`https://api.spotify.com/v1/browse/categories/${val}/playlists?limit=10`, {
 			method: 'GET',
 			headers: { Authorization: 'Bearer ' + token },
 		});
@@ -66,19 +70,39 @@ const App = () => {
 		});
 	};
 
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		const tracksResponse = await axios(
+			`https://api.spotify.com/v1/playlists/${playlist.selectedPlaylist}/tracks?limit=10`,
+			{
+				method: 'GET',
+				headers: { Authorization: 'Bearer ' + token, },
+			}
+		);
+		setTracks({
+			selectedTrack: tracks.selectedTrack,
+			listOfTracks: tracksResponse.data.items,
+		});
+	};
+
+	const trackBtnClicked = val => {
+		const currentTracks = [...tracks.listOfTracks];
+		const trackInfo = currentTracks.filter(track => track.track.id === val);
+		setTrackDetail(trackInfo[0].track)
+	}
+
 	return (
-		<form onSubmit={() => {}}>
+		<form onSubmit={handleSubmit}>
 			<div className='container'>
-				<MusicSelection
-					options={genres.listOfGenres}
-					selectedValue={genres.selectedGenre}
-					onChange={genreChanged} />
+				<MusicSelection options={genres.listOfGenres} selectedValue={genres.selectedGenre} onChange={genreChanged} />
 				<MusicSelection
 					options={playlist.listOfPlaylist}
 					selectedValue={playlist.selectedPlaylist}
 					onChange={playlistChanged}
 				/>
 				<button type='submit'>Search</button>
+				<TrackLists items={tracks.listOfTracks} onChange={trackBtnClicked} />
 			</div>
 		</form>
 	);
