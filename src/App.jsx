@@ -9,12 +9,6 @@ const App = () => {
 	const baseURL = 'https://accounts.spotify.com/api/token';
 	const genresURL = 'https://api.spotify.com/v1/browse/categories?locale=sv_US';
 
-	// const data = [
-	// 	{ value: 1, name: 'A' },
-	// 	{ value: 2, name: 'B' },
-	// 	{ value: 3, name: 'C' },
-	// ];
-
 	const [token, setToken] = useState('');
 	const [genres, setGenres] = useState({ selectedGenre: '', listOfGenres: [] });
 	const [playlist, setPlaylist] = useState({ selectedPlaylist: '', listOfPlaylist: [] });
