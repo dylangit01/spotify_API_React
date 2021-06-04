@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import MusicSelection from './components/spotify/MusicSelection';
+import MusicSelection from './components/Spotify/MusicSelection';
 import axios from 'axios';
-import TrackLists from './components/tracklists/TrackLists';
+import TrackLists from './components/Tracklists/TrackLists';
+import SongDetail from './components/SongDetail/SongDetails';
 
 const App = () => {
 	const { REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } = process.env;
@@ -52,8 +53,7 @@ const App = () => {
 			listOfGenres: genres.listOfGenres,
 		});
 
-		const playlistResponse = await axios(
-			`https://api.spotify.com/v1/browse/categories/${val}/playlists?limit=10`, {
+		const playlistResponse = await axios(`https://api.spotify.com/v1/browse/categories/${val}/playlists?limit=10`, {
 			method: 'GET',
 			headers: { Authorization: 'Bearer ' + token },
 		});
@@ -77,7 +77,7 @@ const App = () => {
 			`https://api.spotify.com/v1/playlists/${playlist.selectedPlaylist}/tracks?limit=10`,
 			{
 				method: 'GET',
-				headers: { Authorization: 'Bearer ' + token, },
+				headers: { Authorization: 'Bearer ' + token },
 			}
 		);
 		setTracks({
@@ -86,25 +86,36 @@ const App = () => {
 		});
 	};
 
-	const trackBtnClicked = val => {
+	const trackBtnClicked = (val) => {
 		const currentTracks = [...tracks.listOfTracks];
-		const trackInfo = currentTracks.filter(track => track.track.id === val);
-		setTrackDetail(trackInfo[0].track)
-	}
+		const trackInfo = currentTracks.filter((t) => t.track.id === val);
+		setTrackDetail(trackInfo[0].track);
+	};
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<div className='container'>
-				<MusicSelection options={genres.listOfGenres} selectedValue={genres.selectedGenre} onChange={genreChanged} />
+		<div className='container'>
+			<form onSubmit={handleSubmit}>
 				<MusicSelection
+					label='Genre:'
+					options={genres.listOfGenres}
+					selectedValue={genres.selectedGenre}
+					onChange={genreChanged}
+				/>
+				<MusicSelection
+					label='Playlist:'
 					options={playlist.listOfPlaylist}
 					selectedValue={playlist.selectedPlaylist}
 					onChange={playlistChanged}
 				/>
-				<button type='submit'>Search</button>
+				<div className="col-sm-6 row form-group px-3">
+					<button className="btn btn-outline-primary" type="submit">Search</button>
+				</div>
+				<div className="row">
 				<TrackLists items={tracks.listOfTracks} onChange={trackBtnClicked} />
-			</div>
-		</form>
+				{trackDetail && <SongDetail {...trackDetail} />}
+				</div>
+			</form>
+		</div>
 	);
 };
 
