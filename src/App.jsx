@@ -14,7 +14,7 @@ const App = () => {
 	];
 
 	const [token, setToken] = useState('');
-	const [genres, setGenres] = useState([])
+	const [genres, setGenres] = useState({selectedGenre: '', listOfGenres: []})
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -32,8 +32,18 @@ const App = () => {
 				method: 'GET',
 				headers: { Authorization: `Bearer ${tokenResponse.data.access_token}` },
 			});
+			
+			setGenres({
+				selectedGenre: genres.selectedGenre,
+				listOfGenres: genreResponse.data.categories.items,
+			});
+	
 
-			setGenres(genreResponse.data.categories.items)
+
+
+
+
+
 
 
 
@@ -50,12 +60,12 @@ const App = () => {
 
 		};
 		fetchData();
-	}, []);
+	}, [genres.selectedGenre, REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET]);
 
 	return (
 		<form onSubmit={() => {}}>
 			<div className='container'>
-				<MusicSelection options={genres} />
+				<MusicSelection options={genres.listOfGenres} />
 				<MusicSelection options={data} />
 				<button type='submit'>Search</button>
 			</div>
