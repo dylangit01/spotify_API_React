@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MusicSelection from './components/spotify/MusicSelection';
-import connectSpotify from './api/connectSpotify';
+import axios from 'axios'
 
 const App = () => {
 	const { REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } = process.env;
@@ -13,21 +13,20 @@ const App = () => {
 
 	const [token, setToken] = useState('');
 
-	connectSpotify('https://accounts.spotify.com/api/token', {
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			Authorization: 'Basic ' + btoa(`${REACT_APP_CLIENT_ID}:${REACT_APP_CLIENT_SECRET}`),
-		},
-		data: 'grant_type=client_credentials',
-		method: 'POST',
-	}).then((tokenResponse) => {
-		setToken(tokenResponse.data.access_token);
-	});
-
-
-
-
-
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await axios('https://accounts.spotify.com/api/token', {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					Authorization: 'Basic ' + btoa(`${REACT_APP_CLIENT_ID}:${REACT_APP_CLIENT_SECRET}`),
+				},
+				data: 'grant_type=client_credentials',
+				method: 'POST',
+			});
+			console.log(response.data.access_token);
+		};
+		fetchData();
+	}, []);
 
 	return (
 		<form onSubmit={() => {}}>
