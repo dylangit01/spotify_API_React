@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const App = () => {
 	const { REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } = process.env;
+	const baseURL = 'https://accounts.spotify.com/api/token';
 
 	const data = [
 		{ value: 1, name: 'A' },
@@ -15,7 +16,7 @@ const App = () => {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const response = await axios('https://accounts.spotify.com/api/token', {
+			const response = await axios(`${baseURL}`, {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					Authorization: 'Basic ' + btoa(`${REACT_APP_CLIENT_ID}:${REACT_APP_CLIENT_SECRET}`),
