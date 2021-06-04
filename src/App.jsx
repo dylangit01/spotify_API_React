@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MusicSelection from './components/spotify/MusicSelection';
-import axios from 'axios'
+import axios from 'axios';
 
 const App = () => {
 	const { REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } = process.env;
 	const baseURL = 'https://accounts.spotify.com/api/token';
+	const genresURL = 'https://api.spotify.com/v1/browse/categories?locale=sv_US';
 
 	const data = [
 		{ value: 1, name: 'A' },
@@ -13,10 +14,11 @@ const App = () => {
 	];
 
 	const [token, setToken] = useState('');
+	const [genres, setGenres] = useState([])
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const response = await axios(`${baseURL}`, {
+			const tokenResponse = await axios(`${baseURL}`, {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					Authorization: 'Basic ' + btoa(`${REACT_APP_CLIENT_ID}:${REACT_APP_CLIENT_SECRET}`),
@@ -24,7 +26,28 @@ const App = () => {
 				data: 'grant_type=client_credentials',
 				method: 'POST',
 			});
-			console.log(response.data.access_token);
+			setToken(tokenResponse.data.access_token);
+
+			const genreResponse = await axios(`${genresURL}`, {
+				method: 'GET',
+				headers: { Authorization: `Bearer ${tokenResponse.data.access_token}` },
+			});
+
+			setGenres(genreResponse.data.categories.items)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		};
 		fetchData();
 	}, []);
@@ -32,7 +55,7 @@ const App = () => {
 	return (
 		<form onSubmit={() => {}}>
 			<div className='container'>
-				<MusicSelection options={data} />
+				<MusicSelection options={genres} />
 				<MusicSelection options={data} />
 				<button type='submit'>Search</button>
 			</div>
