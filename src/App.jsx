@@ -93,7 +93,7 @@ const App = () => {
 	};
 
 	return (
-		<div className='container'>
+		<div className='container mt-3'>
 			<form onSubmit={handleSubmit}>
 				<MusicSelection
 					label='Genre:'
