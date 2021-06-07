@@ -51,6 +51,7 @@ const App = () => {
 			method: 'GET',
 			headers: { Authorization: 'Bearer ' + token },
 		});
+		console.log(playlistResponse);
 		setPlaylist({
 			selectedPlaylist: playlist.selectedPlaylist,
 			listOfPlaylist: playlistResponse.data.playlists.items,
@@ -105,7 +106,8 @@ const App = () => {
 					<button className="btn btn-outline-primary" type="submit">Search</button>
 				</div>
 				<div className="row">
-				<TrackLists items={tracks.listOfTracks} onChange={trackBtnClicked} />
+					<TrackLists items={tracks.listOfTracks} onChange={trackBtnClicked} />
+					{console.log(trackDetail)}
 				{trackDetail && <SongDetail {...trackDetail} />}
 				</div>
 			</form>
